@@ -30,6 +30,9 @@ from app.utils import (
 from config.settings import Settings
 
 
+YOUTUBE_LINK_PATTERN = r"(?i)^(https?://)?(www\.)?(youtube\.com/watch\?v=|youtu\.be/)[A-Za-z0-9_-]{6,}"
+
+
 (
     WAIT_LINK,
     WAIT_CLIP_COUNT,
@@ -566,7 +569,7 @@ def run_bot() -> None:
     conv = ConversationHandler(
         entry_points=[
             CommandHandler("start", start),
-            MessageHandler(filters.TEXT & ~filters.COMMAND, start_from_link),
+            MessageHandler(filters.Regex(YOUTUBE_LINK_PATTERN) & ~filters.COMMAND, start_from_link),
         ],
         states={
             WAIT_LINK: [MessageHandler(filters.TEXT & ~filters.COMMAND, receive_link)],
@@ -585,7 +588,7 @@ def run_bot() -> None:
             WAIT_CONFIRM: [MessageHandler(filters.TEXT & ~filters.COMMAND, receive_confirm)],
         },
         fallbacks=[CommandHandler("cancel", cancel)],
-        allow_reentry=True,
+        allow_reentry=False,
     )
 
     app.add_handler(conv)
