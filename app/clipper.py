@@ -83,19 +83,22 @@ def render_vertical_clip(
     source_height: int,
     focus_x_ratio: float,
     quality: str,
-    subtitle_srt: Optional[Path],
+    subtitle_track: Optional[Path],
     watermark_config: Optional[Dict],
     logger: logging.Logger,
 ) -> Path:
     vf_chain = [_build_crop_filter(source_width, source_height, focus_x_ratio)]
 
-    if subtitle_srt and subtitle_srt.exists() and subtitle_srt.stat().st_size > 0:
-        srt_path = escape_ffmpeg_path(subtitle_srt)
-        vf_chain.append(
-            "subtitles="
-            f"'{srt_path}':"
-            "force_style='Alignment=2,FontSize=10,PrimaryColour=&HFFFFFF&,OutlineColour=&H000000&,Bold=1,Outline=2,MarginV=100'"
-        )
+    if subtitle_track and subtitle_track.exists() and subtitle_track.stat().st_size > 0:
+        sub_path = escape_ffmpeg_path(subtitle_track)
+        if subtitle_track.suffix.lower() == ".ass":
+            vf_chain.append(f"ass='{sub_path}'")
+        else:
+            vf_chain.append(
+                "subtitles="
+                f"'{sub_path}':"
+                "force_style='Alignment=2,FontSize=10,PrimaryColour=&HFFFFFF&,OutlineColour=&H000000&,Bold=1,Outline=2,MarginV=100'"
+            )
 
     if watermark_config and watermark_config.get("enabled") and watermark_config.get("text"):
         wf = build_drawtext_filter(watermark_config)

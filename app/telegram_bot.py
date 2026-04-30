@@ -18,7 +18,7 @@ from app.clipper import extract_audio, get_video_probe, render_vertical_clip
 from app.cropper import estimate_focus_x, summarize_visual_activity
 from app.downloader import download_video, fetch_video_info
 from app.scoring import rank_and_filter_clips
-from app.subtitle import build_srt_for_clip
+from app.subtitle import build_ass_karaoke_for_clip
 from app.transcriber import transcribe_audio
 from app.utils import (
     build_unique_name,
@@ -500,9 +500,9 @@ async def _run_pipeline_internal(chat_id: int, session: Dict[str, Any], context:
             subtitle_path = None
             if session["subtitle_enabled"]:
                 await _status(context, chat_id, f"Subtitle clip {idx} sedang dibuat...")
-                subtitle_path = job_dir / f"clip_{idx:02d}.srt"
+                subtitle_path = job_dir / f"clip_{idx:02d}.ass"
                 await asyncio.to_thread(
-                    build_srt_for_clip,
+                    build_ass_karaoke_for_clip,
                     transcript["segments"],
                     start_s,
                     end_s,
