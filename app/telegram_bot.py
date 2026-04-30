@@ -56,6 +56,13 @@ SETTINGS: Settings
 PROCESS_SEMAPHORE: asyncio.Semaphore
 
 
+def _yt_dlp_auth_config() -> Dict[str, str]:
+    return {
+        "cookies_file": str(SETTINGS.ytdlp_cookies_file),
+        "cookies_from_browser": SETTINGS.ytdlp_cookies_from_browser,
+    }
+
+
 def _session_defaults() -> Dict[str, Any]:
     return {
         "youtube_url": "",
@@ -413,7 +420,7 @@ async def _run_pipeline_internal(chat_id: int, session: Dict[str, Any], context:
             raise RuntimeError("Storage VPS hampir habis. Minimal 500MB ruang kosong dibutuhkan.")
 
         await _status(context, chat_id, "Link diterima, sedang validasi...")
-        info = await asyncio.to_thread(fetch_video_info, session["youtube_url"], LOGGER)
+        info = await asyncio.to_thread(fetch_video_info, session["youtube_url"], LOGGER, _yt_dlp_auth_config())
         duration = int(info.get("duration") or 0)
         if duration <= 0:
             raise RuntimeError("Durasi video tidak terbaca.")
@@ -424,7 +431,13 @@ async def _run_pipeline_internal(chat_id: int, session: Dict[str, Any], context:
             )
 
         await _status(context, chat_id, "Video sedang didownload...")
-        video_path = await asyncio.to_thread(download_video, session["youtube_url"], job_dir, LOGGER)
+        video_path = await asyncio.to_thread(
+            download_video,
+            session["youtube_url"],
+            job_dir,
+            LOGGER,
+            _yt_dlp_auth_config(),
+        )
 
         await _status(context, chat_id, "Audio sedang diekstrak...")
         audio_path = job_dir / "audio.wav"

@@ -56,6 +56,8 @@ class Settings:
     whisperx_device: str
     whisperx_compute_type: str
     gemini_model: str
+    ytdlp_cookies_file: Path
+    ytdlp_cookies_from_browser: str
     max_concurrent_jobs: int
     telegram_max_file_size_mb: int
     auto_delete_temp_files: bool
@@ -93,6 +95,8 @@ class Settings:
             whisperx_device=os.getenv("WHISPERX_DEVICE", "cpu"),
             whisperx_compute_type=os.getenv("WHISPERX_COMPUTE_TYPE", "int8"),
             gemini_model=os.getenv("GEMINI_MODEL", "gemini-1.5-flash"),
+            ytdlp_cookies_file=base / os.getenv("YTDLP_COOKIES_FILE", "config/youtube_cookies.txt"),
+            ytdlp_cookies_from_browser=os.getenv("YTDLP_COOKIES_FROM_BROWSER", "").strip(),
             max_concurrent_jobs=_as_int(os.getenv("MAX_CONCURRENT_JOBS"), 2),
             telegram_max_file_size_mb=_as_int(os.getenv("TELEGRAM_MAX_FILE_SIZE_MB"), 50),
             auto_delete_temp_files=_as_bool(os.getenv("AUTO_DELETE_TEMP_FILES"), True),

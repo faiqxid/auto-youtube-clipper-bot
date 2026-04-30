@@ -1,0 +1,6 @@
+# Format cookies Netscape.
+# Export dari browser extension "Get cookies.txt LOCALLY" saat login YouTube,
+# lalu simpan sebagai: config/youtube_cookies.txt
+#
+# Contoh baris:
+# .youtube.com	TRUE	/	TRUE	2147483647	SID	abc123

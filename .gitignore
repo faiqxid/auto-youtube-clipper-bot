@@ -1,5 +1,6 @@
 .env
 config/gemini_api_keys.txt
+config/youtube_cookies.txt
 __pycache__/
 *.pyc
 temp/

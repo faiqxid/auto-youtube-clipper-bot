@@ -95,6 +95,8 @@ cp .env.example .env
 - `TELEGRAM_BOT_TOKEN`
 - `GEMINI_API_KEYS_FILE` (direkomendasikan untuk multi key)
 - `GEMINI_API_KEY` (opsional fallback 1 key)
+- `YTDLP_COOKIES_FILE` untuk video YouTube yang butuh verifikasi anti-bot
+- `YTDLP_COOKIES_FROM_BROWSER` (opsional, lebih cocok di local machine)
 - konfigurasi lain sesuai kebutuhan
 
 7. (Opsional tapi direkomendasikan) buat file key pool:
@@ -105,7 +107,15 @@ cp config/gemini_api_keys.example.txt config/gemini_api_keys.txt
 
 Isi dengan 1 key per baris. Bot akan auto failover ke key berikutnya jika key aktif error/rate-limit.
 
-8. Jalankan bot:
+8. (Direkomendasikan) siapkan cookies YouTube:
+
+```bash
+cp config/youtube_cookies.example.txt config/youtube_cookies.txt
+```
+
+Lalu isi `config/youtube_cookies.txt` dengan format Netscape cookies (hasil export saat akun YouTube login).
+
+9. Jalankan bot:
 
 ```bash
 python3 bot.py
@@ -261,6 +271,7 @@ sudo systemctl restart youtube-clipper-bot
 - `File terlalu besar`: turunkan quality atau durasi clip.
 - proses lama/crash: cek log `logs/bot.log` dan ruang disk VPS.
 - `Semua Gemini API key gagal`: cek quota/key invalid, lalu tambah key baru di file key pool.
+- `Sign in to confirm you're not a bot`: set `YTDLP_COOKIES_FILE` ke file cookies valid, atau isi `YTDLP_COOKIES_FROM_BROWSER`.
 
 ## Keamanan API Key
 
