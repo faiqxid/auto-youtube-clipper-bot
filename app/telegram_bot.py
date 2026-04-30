@@ -401,7 +401,14 @@ async def receive_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
 
 async def _status(context: ContextTypes.DEFAULT_TYPE, chat_id: int, text: str) -> None:
-    await context.bot.send_message(chat_id=chat_id, text=text)
+    message = text if text is not None else ""
+    max_len = 3500
+    if len(message) <= max_len:
+        await context.bot.send_message(chat_id=chat_id, text=message)
+        return
+    for i in range(0, len(message), max_len):
+        chunk = message[i : i + max_len]
+        await context.bot.send_message(chat_id=chat_id, text=chunk)
 
 
 async def _run_pipeline(chat_id: int, session: Dict[str, Any], context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -464,6 +471,7 @@ async def _run_pipeline_internal(chat_id: int, session: Dict[str, Any], context:
             analyze_moments,
             SETTINGS.gemini_api_keys,
             SETTINGS.gemini_model,
+            SETTINGS.gemini_model_fallbacks,
             transcript["segments"],
             duration,
             session["clip_count"],

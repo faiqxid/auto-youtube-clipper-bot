@@ -30,6 +30,12 @@ def _as_list(value: str) -> List[int]:
     return [int(x.strip()) for x in value.split(",") if x.strip()]
 
 
+def _as_str_list(value: str) -> List[str]:
+    if not value:
+        return []
+    return [x.strip() for x in value.split(",") if x.strip()]
+
+
 @dataclass
 class Settings:
     telegram_bot_token: str
@@ -56,6 +62,7 @@ class Settings:
     whisperx_device: str
     whisperx_compute_type: str
     gemini_model: str
+    gemini_model_fallbacks: List[str]
     ytdlp_cookies_file: Path
     ytdlp_cookies_from_browser: str
     ytdlp_js_runtimes: str
@@ -97,7 +104,10 @@ class Settings:
             whisperx_model=os.getenv("WHISPERX_MODEL", "small"),
             whisperx_device=os.getenv("WHISPERX_DEVICE", "cpu"),
             whisperx_compute_type=os.getenv("WHISPERX_COMPUTE_TYPE", "int8"),
-            gemini_model=os.getenv("GEMINI_MODEL", "gemini-1.5-flash"),
+            gemini_model=os.getenv("GEMINI_MODEL", "gemini-2.0-flash"),
+            gemini_model_fallbacks=_as_str_list(
+                os.getenv("GEMINI_MODEL_FALLBACKS", "gemini-2.5-flash,gemini-2.0-flash-lite")
+            ),
             ytdlp_cookies_file=base / os.getenv("YTDLP_COOKIES_FILE", "config/youtube_cookies.txt"),
             ytdlp_cookies_from_browser=os.getenv("YTDLP_COOKIES_FROM_BROWSER", "").strip(),
             ytdlp_js_runtimes=os.getenv("YTDLP_JS_RUNTIMES", "node,deno").strip(),

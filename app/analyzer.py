@@ -90,9 +90,38 @@ def _validate_output(data: Dict[str, Any]) -> Dict[str, Any]:
     return data
 
 
+def _build_models_to_try(primary: str, fallbacks: List[str]) -> List[str]:
+    ordered = [primary] + list(fallbacks or [])
+    out = []
+    seen = set()
+    for name in ordered:
+        n = str(name).strip()
+        if not n or n in seen:
+            continue
+        seen.add(n)
+        out.append(n)
+    return out
+
+
+def _is_model_not_found(err_text: str) -> bool:
+    text = err_text.lower()
+    return "is not found for api version" in text or "models/" in text and "not found" in text
+
+
+def _compact_errors(errors: List[str], limit: int = 8) -> str:
+    if not errors:
+        return "-"
+    head = errors[:limit]
+    rest = len(errors) - len(head)
+    if rest > 0:
+        head.append(f"(+{rest} error lain)")
+    return " | ".join(head)
+
+
 def analyze_moments(
     gemini_api_keys: List[str],
     gemini_model: str,
+    gemini_model_fallbacks: List[str],
     transcript_segments: List[Dict[str, Any]],
     video_duration_seconds: int,
     requested_clips: int,
@@ -111,24 +140,35 @@ def analyze_moments(
     if not gemini_api_keys:
         raise RuntimeError("Tidak ada Gemini API key yang tersedia.")
 
+    models_to_try = _build_models_to_try(gemini_model, gemini_model_fallbacks)
     errors = []
-    for idx, key in enumerate(gemini_api_keys, start=1):
-        try:
-            logger.info("Sending transcript to Gemini key_index=%s", idx)
-            genai.configure(api_key=key)
-            model = genai.GenerativeModel(gemini_model)
-            response = model.generate_content(
-                prompt,
-                generation_config={"temperature": 0.3},
-            )
-            text = getattr(response, "text", "") or ""
-            text = _strip_json_text(text)
-            data = json.loads(text)
-            return _validate_output(data)
-        except Exception as exc:
-            errors.append(f"key-{idx}: {exc}")
-            logger.warning("Gemini key-%s failed: %s", idx, exc)
-            time.sleep(0.6)
+    for model_name in models_to_try:
+        model_not_found = False
+        for idx, key in enumerate(gemini_api_keys, start=1):
+            try:
+                logger.info("Sending transcript to Gemini model=%s key_index=%s", model_name, idx)
+                genai.configure(api_key=key)
+                model = genai.GenerativeModel(model_name)
+                response = model.generate_content(
+                    prompt,
+                    generation_config={"temperature": 0.3},
+                )
+                text = getattr(response, "text", "") or ""
+                text = _strip_json_text(text)
+                data = json.loads(text)
+                return _validate_output(data)
+            except Exception as exc:
+                msg = str(exc)
+                if _is_model_not_found(msg):
+                    model_not_found = True
+                    logger.warning("Gemini model tidak tersedia: model=%s", model_name)
+                    errors.append(f"model={model_name}: not_found")
+                    break
+                errors.append(f"model={model_name},key-{idx}: {msg}")
+                logger.warning("Gemini model=%s key-%s failed: %s", model_name, idx, exc)
+                time.sleep(0.4)
+                continue
+        if model_not_found:
             continue
 
-    raise RuntimeError("Semua Gemini API key gagal. Detail: " + " | ".join(errors))
+    raise RuntimeError("Semua Gemini model/key gagal. Detail: " + _compact_errors(errors))
