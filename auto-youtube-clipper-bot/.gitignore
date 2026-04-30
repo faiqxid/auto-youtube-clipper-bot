@@ -1,0 +1,13 @@
+.env
+config/gemini_api_keys.txt
+__pycache__/
+*.pyc
+temp/
+outputs/
+logs/
+*.mp4
+*.mp3
+*.wav
+*.srt
+*.ass
+*.log

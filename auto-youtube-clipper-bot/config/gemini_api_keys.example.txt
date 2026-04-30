@@ -1,0 +1,7 @@
+# Satu API key per baris.
+# Bot akan mencoba key dari atas ke bawah.
+# Jika key pertama error/rate-limit, bot otomatis pindah ke key berikutnya.
+
+AIzaSyYourKey1
+AIzaSyYourKey2
+AIzaSyYourKey3

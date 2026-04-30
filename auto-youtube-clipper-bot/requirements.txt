@@ -1,0 +1,11 @@
+python-dotenv>=1.0.1
+python-telegram-bot>=21.0,<22.0
+yt-dlp>=2024.10.0
+google-generativeai>=0.8.0
+opencv-python>=4.9.0.80
+numpy>=1.26.0
+whisperx>=3.3.0
+torch>=2.2.0
+ffmpeg-python>=0.2.0
+pydub>=0.25.1
+moviepy>=1.0.3

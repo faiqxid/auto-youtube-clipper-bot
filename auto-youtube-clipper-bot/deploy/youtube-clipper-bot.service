@@ -1,0 +1,15 @@
+[Unit]
+Description=Auto YouTube Clipper Telegram Bot
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/auto-youtube-clipper-bot
+ExecStart=/home/ubuntu/auto-youtube-clipper-bot/.venv/bin/python /home/ubuntu/auto-youtube-clipper-bot/bot.py
+Restart=always
+RestartSec=5
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
