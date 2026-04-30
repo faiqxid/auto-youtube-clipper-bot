@@ -27,6 +27,7 @@ def _build_ydl_opts(base_opts: Dict, auth: Optional[Dict], logger: logging.Logge
     auth = auth or {}
     cookies_file = auth.get("cookies_file")
     cookies_from_browser = auth.get("cookies_from_browser")
+    js_runtimes = auth.get("js_runtimes")
 
     if cookies_file:
         cookies_path = Path(cookies_file)
@@ -38,6 +39,15 @@ def _build_ydl_opts(base_opts: Dict, auth: Optional[Dict], logger: logging.Logge
     browser_tuple = _parse_cookies_from_browser(cookies_from_browser or "")
     if browser_tuple:
         opts["cookiesfrombrowser"] = browser_tuple
+
+    if js_runtimes:
+        runtimes = {}
+        for rt in str(js_runtimes).split(","):
+            key = rt.strip().lower()
+            if key:
+                runtimes[key] = {}
+        if runtimes:
+            opts["js_runtimes"] = runtimes
 
     return opts
 

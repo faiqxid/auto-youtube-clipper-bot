@@ -97,6 +97,7 @@ cp .env.example .env
 - `GEMINI_API_KEY` (opsional fallback 1 key)
 - `YTDLP_COOKIES_FILE` untuk video YouTube yang butuh verifikasi anti-bot
 - `YTDLP_COOKIES_FROM_BROWSER` (opsional, lebih cocok di local machine)
+- `YTDLP_JS_RUNTIMES` untuk runtime JS yt-dlp (disarankan `node,deno`)
 - konfigurasi lain sesuai kebutuhan
 
 7. (Opsional tapi direkomendasikan) buat file key pool:
@@ -272,6 +273,7 @@ sudo systemctl restart youtube-clipper-bot
 - proses lama/crash: cek log `logs/bot.log` dan ruang disk VPS.
 - `Semua Gemini API key gagal`: cek quota/key invalid, lalu tambah key baru di file key pool.
 - `Sign in to confirm you're not a bot`: set `YTDLP_COOKIES_FILE` ke file cookies valid, atau isi `YTDLP_COOKIES_FROM_BROWSER`.
+- `No supported JavaScript runtime`: install `nodejs`/`deno`, lalu set `YTDLP_JS_RUNTIMES=node,deno`.
 
 ## Keamanan API Key
 

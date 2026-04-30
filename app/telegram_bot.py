@@ -60,6 +60,7 @@ def _yt_dlp_auth_config() -> Dict[str, str]:
     return {
         "cookies_file": str(SETTINGS.ytdlp_cookies_file),
         "cookies_from_browser": SETTINGS.ytdlp_cookies_from_browser,
+        "js_runtimes": SETTINGS.ytdlp_js_runtimes,
     }
 
 

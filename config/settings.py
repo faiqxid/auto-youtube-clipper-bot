@@ -58,6 +58,7 @@ class Settings:
     gemini_model: str
     ytdlp_cookies_file: Path
     ytdlp_cookies_from_browser: str
+    ytdlp_js_runtimes: str
     max_concurrent_jobs: int
     telegram_max_file_size_mb: int
     auto_delete_temp_files: bool
@@ -97,6 +98,7 @@ class Settings:
             gemini_model=os.getenv("GEMINI_MODEL", "gemini-1.5-flash"),
             ytdlp_cookies_file=base / os.getenv("YTDLP_COOKIES_FILE", "config/youtube_cookies.txt"),
             ytdlp_cookies_from_browser=os.getenv("YTDLP_COOKIES_FROM_BROWSER", "").strip(),
+            ytdlp_js_runtimes=os.getenv("YTDLP_JS_RUNTIMES", "node,deno").strip(),
             max_concurrent_jobs=_as_int(os.getenv("MAX_CONCURRENT_JOBS"), 2),
             telegram_max_file_size_mb=_as_int(os.getenv("TELEGRAM_MAX_FILE_SIZE_MB"), 50),
             auto_delete_temp_files=_as_bool(os.getenv("AUTO_DELETE_TEMP_FILES"), True),
