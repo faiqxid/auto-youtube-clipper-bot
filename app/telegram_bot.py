@@ -62,6 +62,7 @@ def _yt_dlp_auth_config() -> Dict[str, str]:
         "cookies_from_browser": SETTINGS.ytdlp_cookies_from_browser,
         "js_runtimes": SETTINGS.ytdlp_js_runtimes,
         "remote_components": SETTINGS.ytdlp_remote_components,
+        "player_clients": SETTINGS.ytdlp_player_clients,
     }
 
 

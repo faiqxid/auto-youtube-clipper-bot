@@ -99,6 +99,7 @@ cp .env.example .env
 - `YTDLP_COOKIES_FROM_BROWSER` (opsional, lebih cocok di local machine)
 - `YTDLP_JS_RUNTIMES` untuk runtime JS yt-dlp (disarankan `node,deno`)
 - `YTDLP_REMOTE_COMPONENTS` untuk challenge solver EJS (disarankan `ejs:github`)
+- `YTDLP_PLAYER_CLIENTS` untuk urutan client YouTube (contoh: `android,web,mweb,tv`)
 - konfigurasi lain sesuai kebutuhan
 
 7. (Opsional tapi direkomendasikan) buat file key pool:
@@ -276,6 +277,7 @@ sudo systemctl restart youtube-clipper-bot
 - `Sign in to confirm you're not a bot`: set `YTDLP_COOKIES_FILE` ke file cookies valid, atau isi `YTDLP_COOKIES_FROM_BROWSER`.
 - `No supported JavaScript runtime`: install `nodejs`/`deno`, lalu set `YTDLP_JS_RUNTIMES=node,deno`.
 - `n challenge solving failed`: set `YTDLP_REMOTE_COMPONENTS=ejs:github` atau install `yt-dlp[default]`.
+- `Only images are available` / `Requested format is not available`: challenge YouTube belum lolos atau IP VPS dibatasi; cek cookies, runtime, dan pertimbangkan proxy residential.
 
 ## Keamanan API Key
 

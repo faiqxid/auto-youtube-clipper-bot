@@ -29,6 +29,7 @@ def _build_ydl_opts(base_opts: Dict, auth: Optional[Dict], logger: logging.Logge
     cookies_from_browser = auth.get("cookies_from_browser")
     js_runtimes = auth.get("js_runtimes")
     remote_components = auth.get("remote_components")
+    player_clients = auth.get("player_clients")
 
     if cookies_file:
         cookies_path = Path(cookies_file)
@@ -61,6 +62,18 @@ def _build_ydl_opts(base_opts: Dict, auth: Optional[Dict], logger: logging.Logge
         if components:
             opts["remote_components"] = components
 
+    if player_clients:
+        clients = []
+        normalized = str(player_clients).replace(";", ",")
+        for client in normalized.split(","):
+            c = client.strip()
+            if c:
+                clients.append(c)
+        if clients:
+            opts.setdefault("extractor_args", {})
+            opts["extractor_args"].setdefault("youtube", {})
+            opts["extractor_args"]["youtube"]["player_client"] = clients
+
     return opts
 
 
@@ -70,6 +83,11 @@ def _raise_user_friendly_error(exc: Exception) -> None:
         raise RuntimeError(
             "YouTube minta verifikasi anti-bot. Isi cookies YouTube di "
             "YTDLP_COOKIES_FILE (format Netscape) atau set YTDLP_COOKIES_FROM_BROWSER."
+        ) from exc
+    if "Only images are available for download" in msg or "Requested format is not available" in msg:
+        raise RuntimeError(
+            "YouTube hanya mengembalikan storyboard/images (format video/audio tidak tersedia). "
+            "Biasanya karena challenge belum lolos atau IP VPS terdeteksi."
         ) from exc
     if "challenge solving failed" in msg or "No supported JavaScript runtime" in msg:
         raise RuntimeError(
@@ -81,6 +99,7 @@ def _raise_user_friendly_error(exc: Exception) -> None:
 
 def fetch_video_info(url: str, logger: logging.Logger, auth: Optional[Dict] = None) -> Dict:
     base_opts = {
+        "ignoreconfig": True,
         "quiet": True,
         "skip_download": True,
         "noplaylist": True,
@@ -99,6 +118,7 @@ def download_video(url: str, output_dir: Path, logger: logging.Logger, auth: Opt
     output_dir.mkdir(parents=True, exist_ok=True)
     out_tmpl = str(output_dir / "%(id)s.%(ext)s")
     base_opts = {
+        "ignoreconfig": True,
         "outtmpl": out_tmpl,
         "noplaylist": True,
         "format": "bestvideo+bestaudio/best",
