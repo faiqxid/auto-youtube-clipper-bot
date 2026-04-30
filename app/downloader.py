@@ -28,6 +28,7 @@ def _build_ydl_opts(base_opts: Dict, auth: Optional[Dict], logger: logging.Logge
     cookies_file = auth.get("cookies_file")
     cookies_from_browser = auth.get("cookies_from_browser")
     js_runtimes = auth.get("js_runtimes")
+    remote_components = auth.get("remote_components")
 
     if cookies_file:
         cookies_path = Path(cookies_file)
@@ -42,12 +43,23 @@ def _build_ydl_opts(base_opts: Dict, auth: Optional[Dict], logger: logging.Logge
 
     if js_runtimes:
         runtimes = {}
-        for rt in str(js_runtimes).split(","):
+        normalized = str(js_runtimes).replace(";", ",")
+        for rt in normalized.split(","):
             key = rt.strip().lower()
             if key:
                 runtimes[key] = {}
         if runtimes:
             opts["js_runtimes"] = runtimes
+
+    if remote_components:
+        components = []
+        normalized = str(remote_components).replace(";", ",")
+        for comp in normalized.split(","):
+            c = comp.strip()
+            if c:
+                components.append(c)
+        if components:
+            opts["remote_components"] = components
 
     return opts
 
@@ -58,6 +70,11 @@ def _raise_user_friendly_error(exc: Exception) -> None:
         raise RuntimeError(
             "YouTube minta verifikasi anti-bot. Isi cookies YouTube di "
             "YTDLP_COOKIES_FILE (format Netscape) atau set YTDLP_COOKIES_FROM_BROWSER."
+        ) from exc
+    if "challenge solving failed" in msg or "No supported JavaScript runtime" in msg:
+        raise RuntimeError(
+            "JS runtime/challenge solver yt-dlp belum siap. Install runtime (node/deno) "
+            "dan aktifkan YTDLP_REMOTE_COMPONENTS (contoh: ejs:github)."
         ) from exc
     raise exc
 
